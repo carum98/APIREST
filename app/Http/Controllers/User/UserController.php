@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use App\User;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+class UserController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        return response()->json(['data' => $users], 200);
+        return $this->showAll($users, 200);
     }
 
 
@@ -44,7 +44,7 @@ class UserController extends Controller
 
         $user = User::create($campos);
 
-        return response()->json(['data' => $user], 201);
+        return $this->showOne($user, 200);
     }
 
     /**
@@ -56,7 +56,7 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::findOrFail($id);
-        return response()->json(['data' => $user], 200);
+        return $this->showOne($user, 200);
     }
 
     /**
@@ -95,21 +95,19 @@ class UserController extends Controller
 
         if ($request->has('admin')) {
             if (!$user->esVerificado()) {
-                return response()->json(['error' => 'Unicamente los usuarios verificados pueden cambiar su valor de administrador',
-                    'code' => 409], 409);
+                return $this->errorResponse('Unicamente los usuarios verificados pueden cambiar su valor de administrador', 409);
             }
 
             $user->admin = $request->admin;
         }
 
         if (!$user->isDirty()) {
-            return response()->json(['error' => 'Se debe especificar el menos un valor diferente',
-                'code' => 422], 422);
+            return $this->errorResponse('Se debe especificar el menos un valor diferente', 422);
         }
 
         $user->save();
 
-        return response()->json(['data' => $user], 200);
+        return $this->showOne($user, 200);
     }
 
     /**
@@ -122,6 +120,6 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $user->delete();
-        return response()->json(['data' => $user], 200);
+        return $this->showOne($user, 200);
     }
 }
