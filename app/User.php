@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -15,6 +16,8 @@ class User extends Authenticatable
 
     const USAURIO_ADMINISTRADOR = 'true';
     const USUARIO_REGULAR = 'false';
+
+    protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.
@@ -59,6 +62,6 @@ class User extends Authenticatable
     }
 
     public function generateVerificationToken() {
-        return str_random(40);
+        return Str::random(40);
     }
 }
