@@ -77,7 +77,7 @@ class Handler extends ExceptionHandler
             return $this->errorResponse("El metodo en la peticion no es valido", 405);
         }
         if ($exception instanceof HttpException){
-            return $this->errorResponse($exception->getMessage(), $exception->getCode());
+            return $this->errorResponse($exception->getMessage(), $exception->getStatusCode());
         }
         if ($exception instanceof QueryException){
             $code = $exception->errorInfo[1];
