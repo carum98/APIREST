@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Product;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -29,6 +30,11 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        //
+        Product::updated(function (Product $product) {
+            if ($product->quantity == 0 && $product->estaDisponble()) {
+                $product->status = Product::PRODUCTO_NO_DISPONIBLE;
+                $product->save();
+            }
+        });
     }
 }
