@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Scopes\SellerScope;
+use App\Transformers\SellerTransformer;
 
 class Seller extends User
 {
@@ -12,6 +13,8 @@ class Seller extends User
 
         static::addGlobalScope(new SellerScope());
     }
+
+    public $transformer = SellerTransformer::class;
 
     public function products()
     {

@@ -21,15 +21,29 @@ trait ApiResponse
 
     public function showAll(Collection $collection, $code = 200)
     {
-        return $this->successResponse(['data' => $collection], $code);
+        if ($collection->isEmpty())
+        {
+            return $this->successResponse(['data' => $collection], $code);
+        }
+        $transformer = $collection->first()->transformer;
+        $collection = $this->transforData($collection, $transformer);
+        return $this->successResponse($collection, $code);
     }
 
     public function showOne(Model $instance, $code = 200)
     {
-        return $this->successResponse(['data' => $instance], $code);
+        $transfomer = $instance->transformer;
+        $instance = $this->transforData($instance, $transfomer);
+        return $this->successResponse($instance, $code);
     }
 
     public function showMessage($message, $code = 200) {
         return $this->successResponse(['data' => $message], $code);
+    }
+
+    protected function transforData($data, $tranformer)
+    {
+        $traformation = fractal($data, new $tranformer);
+        return $traformation->toArray();
     }
 }
