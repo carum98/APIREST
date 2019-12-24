@@ -1,17 +1,23 @@
-@extends('layouts.app')
-
-@section('content')
+<template>
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">Bienvenido</div>
+                    <div class="card-header">Example Component</div>
 
                     <div class="card-body">
-                        FrontEnd del API
+                        I'm an example component.
                     </div>
                 </div>
             </div>
         </div>
     </div>
-@endsection
+</template>
+
+<script>
+    export default {
+        mounted() {
+            console.log('Component mounted.')
+        }
+    }
+</script>

@@ -9,6 +9,8 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Illuminate\Session\TokenMismatchException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -85,6 +87,9 @@ class Handler extends ExceptionHandler
                 return $this->errorResponse('No se puede eliminar porque esta realcionado con otro', 409);
             }
         }
+        if ($exception instanceof TokenMismatchException) {
+            return redirect()->back()->withInput($request->input());
+        }
 
         if (config('app.debug')){
             return parent::render($request, $exception);
@@ -96,11 +101,22 @@ class Handler extends ExceptionHandler
     protected function convertValidationExceptionToResponse(ValidationException $e, $request)
     {
         $error = $e->validator->errors()->getMessages();
+        if ($this->isFrontend($request)) {
+            return $request->ajax() ? response()->json($error, 422) : redirect()->back()->withInput($request->input())->withErrors($error);
+        }
         return $this->errorResponse($error, 422);
     }
 
     protected function unauthenticated($request, AuthenticationException $exception)
     {
+        if ($this->isFrontend($request)) {
+            return redirect()->guest('login');
+        }
         return $this->errorResponse('No autenticado', 401);
+    }
+
+    private function isFrontend(Request $request)
+    {
+        return $request->acceptsHtml() && collect($request->route()->middleware())->contains('web');
     }
 }
