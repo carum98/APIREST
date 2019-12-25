@@ -19,9 +19,12 @@ class ProductTransactionController extends ApiController
      *
      * @param Product $product
      * @return void
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index(Product $product)
     {
+        $this->allowedAdminAction();
+
         $transaction = $product->transactions;
         return $this->showAll($transaction);
     }

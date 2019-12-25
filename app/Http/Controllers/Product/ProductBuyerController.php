@@ -19,9 +19,12 @@ class ProductBuyerController extends ApiController
      *
      * @param Product $product
      * @return void
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index(Product $product)
     {
+        $this->allowedAdminAction();
+
         $buyers = $product->transactions()
             ->with('buyer')
             ->get()

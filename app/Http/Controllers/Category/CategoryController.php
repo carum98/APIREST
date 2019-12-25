@@ -32,9 +32,12 @@ class CategoryController extends ApiController
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Validation\ValidationException
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function store(Request $request)
     {
+        $this->allowedAdminAction();
+
         $rules = [
             'name' => 'required',
             'description' => 'required'
@@ -60,12 +63,15 @@ class CategoryController extends ApiController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Category  $category
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Category $category
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function update(Request $request, Category $category)
     {
+        $this->allowedAdminAction();
+
         $category->fill($request->only([
             'name',
             'description'
@@ -89,6 +95,8 @@ class CategoryController extends ApiController
      */
     public function destroy(Category $category)
     {
+        $this->allowedAdminAction();
+
         $category->delete();
         return $this->showOne($category);
     }

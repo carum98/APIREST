@@ -17,6 +17,9 @@ class UserController extends ApiController
         $this->middleware('auth:api')->except(['store','verify','resend']);
         $this->middleware('transform.input:'.UserTransformer::class)->only(['store', 'update']);
         $this->middleware('scope:manage-account')->only(['show', 'update']);
+        $this->middleware('can:view,user')->only('show');
+        $this->middleware('can:update,user')->only('update');
+        $this->middleware('can:delete,user')->only('destroy');
 
     }
 
@@ -24,9 +27,12 @@ class UserController extends ApiController
      * Display a listing of the resource.
      *
      * @return User[]|\Illuminate\Database\Eloquent\Collection
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index()
     {
+        $this->allowedAdminAction();
+
         $users = User::all();
         return $this->showAll($users, 200);
     }
@@ -77,6 +83,7 @@ class UserController extends ApiController
      * @param User $user
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Validation\ValidationException
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function update(Request $request, User $user)
     {
@@ -103,6 +110,8 @@ class UserController extends ApiController
         }
 
         if ($request->has('admin')) {
+            $this->allowedAdminAction();
+            
             if (!$user->esVerificado()) {
                 return $this->errorResponse('Unicamente los usuarios verificados pueden cambiar su valor de administrador', 409);
             }

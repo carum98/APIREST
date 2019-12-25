@@ -19,9 +19,12 @@ class CategoryBuyerController extends ApiController
      *
      * @param Category $category
      * @return void
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index(Category $category)
     {
+        $this->allowedAdminAction();
+
         $buyers = $category->products()
             ->whereHas('transactions')
             ->with('transactions.buyer')

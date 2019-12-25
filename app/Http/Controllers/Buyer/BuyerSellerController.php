@@ -12,7 +12,6 @@ class BuyerSellerController extends ApiController
     public function __construct()
     {
         parent::__construct();
-        $this->middleware('scope:read-general')->only('index');
     }
 
     /**
@@ -20,9 +19,12 @@ class BuyerSellerController extends ApiController
      *
      * @param Buyer $buyer
      * @return void
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index(Buyer $buyer)
     {
+        $this->allowedAdminAction();
+
         $sellers = $buyer->transactions()->with('product.seller')
             ->get()
             ->pluck('product.seller')
