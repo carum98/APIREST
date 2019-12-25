@@ -111,7 +111,7 @@ class UserController extends ApiController
 
         if ($request->has('admin')) {
             $this->allowedAdminAction();
-            
+
             if (!$user->esVerificado()) {
                 return $this->errorResponse('Unicamente los usuarios verificados pueden cambiar su valor de administrador', 409);
             }
